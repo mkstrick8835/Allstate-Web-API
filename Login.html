@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>User Login</title>
+    <script src="Scripts/jquery-1.9.1.min.js"></script>
+    <link rel="shortcut icon" href="">
+</head>
+<body>
+    <div>
+        <table>
+            <tr>
+                <td>
+                    <table>
+                        <thead colspan="2">Login</thead>
+                        <tr>
+                            <td>User:</td>
+                            <td><input type="text" id="txtUserName" size="15" /></td>
+                        </tr>
+                        <tr>
+                            <td>Password: </td>
+                            <td><input type="password" id="txtPassword" size="15" /></td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td><input type="button" id="btnLogin" value="Login" onclick="login();" /></td>
+                        </tr>
+                    </table>
+                </td>
+                <td>&nbsp;</td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>Not Registered?</td>
+                            <td><input type="button" id="btnRegister" value="Register" onclick="window.location.replace('Register.html');" /></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <br />
+        <ul id="userMessage"></ul>
+    </div>
+
+    <script>
+    function login() {
+        var userName = $('#txtUserName').val();
+        var userPassword = $('#txtPassword').val();
+        var ulUserMessage = $('#userMessage');
+        ulUserMessage.empty();
+
+        $.ajax({
+            type: 'GET',
+            url: 'api/login',
+            dataType: 'json',
+            headers: {
+                'Authorization': userName + ':' + userPassword
+            },
+            success: function (data) {
+                //do nothing
+            },
+            complete: function (jqXHR) {
+                if (jqXHR.status == '401')
+                {
+                    ulUserMessage.append('<li style="color:red">' + jqXHR.status + ' : ' + jqXHR.textStatus + '</li>');
+                    ulUserMessage.append('<li style="color:red">Invalid Login Attempt</li>');
+                }
+
+                //redirect to User Tasks page
+                if (jqXHR.status == '200')
+                {
+                    window.location.replace('UserTasks.html');
+                }
+            }
+        });
+    }
+    </script>
+</body>
+</html>

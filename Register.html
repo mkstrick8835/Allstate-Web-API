@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>User Registration</title>
+    <meta charset="utf-8" />
+    <script src="Scripts/jquery-1.9.1.min.js"></script>
+    <link rel="shortcut icon" href="">
+</head>
+<body>
+    <div>
+        <table>
+            <thead colspan="2">Registration Info</thead>
+            <tr>
+                <td>First Name:</td>
+                <td><input type="text" id="txtFirstName" size="15" /></td>
+            </tr>
+            <tr>
+                <td>Last Name: </td>
+                <td><input type="text" id="txtLastName" size="15" /></td>
+            </tr>
+            <tr>
+                <td>User:</td>
+                <td><input type="text" id="txtUserName" size="15" /></td>
+            </tr>
+            <tr>
+                <td>Password: </td>
+                <td><input type="password" id="txtPassword" size="15" /></td>
+            </tr>
+            <tr>
+                <td>Confirm Password: </td>
+                <td><input type="password" id="txtConfirmPassword" size="15" /></td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td><input type="button" id="btnRegister" value="Register" onclick="register();" /></td>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <br />
+        <ul id="userMessage"></ul>
+    </div>
+
+    <script>
+        function register() {
+            var firstName = $('#txtFirstName').val();
+            var lastName = $('#txtLastName').val();
+            var userName = $('#txtUserName').val();
+            var userPassword = $('#txtPassword').val();
+            var confirmPassword = $('#txtConfirmPassword').val();
+            var ulUserMessage = $('#userMessage');
+
+            //validate user data
+            if (!firstName || !lastName || !userName || !userPassword)
+            {
+                alert('Data missing. Please enter data in all fields.');
+                return;
+            }
+
+            if (userPassword != confirmPassword)
+            {
+                alert('Password does not match with confirmed password');
+                return;
+            }
+
+            var user = {
+                'FirstName': firstName,
+                'LastName': lastName,
+                'UserName': userName,
+                'UserPassword': userPassword
+            };
+
+            $.ajax({
+                type: 'POST',
+                data: JSON.stringify(user),
+                url: 'api/users',
+                contentType: 'application/json',
+                dataType: 'json',
+                headers: {
+                    'Authorization': 'dummyUser:dummyPassword'
+                },
+                success: function (data) {
+                    //do nothing
+                },
+                complete: function (jqXHR) {
+                    if ((jqXHR.status == '400') || (jqXHR.status == '500')) {
+                        ulUserMessage.empty();
+                        ulUserMessage.append('<li style="color:red">' + jqXHR.status + ' : ' + jqXHR.textStatus + '</li>');
+                        ulUserMessage.append('<li style="color:red">Registration Failed</li>');
+                    }
+
+                    if (jqXHR.status == '201') {
+                        ulUserMessage.empty();
+                        ulUserMessage.append('<li style="color:green">Registration Successful</li>');
+                        //redirect to Login page
+                        window.location.replace('Login.html');
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
